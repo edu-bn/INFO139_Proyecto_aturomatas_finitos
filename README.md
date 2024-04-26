@@ -1,1 +1,1 @@
-# INFO139_Proyecto_aturomatas_finitos
+# INFO139_Proyecto_atutomatas_finitos
