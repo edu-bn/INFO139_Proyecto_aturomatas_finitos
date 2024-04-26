@@ -15,10 +15,10 @@ class AFD:
                 return False
         return estado_actual in self.estados_finales
 
-
-if __name__ == '__main__':
+    
+def pedir_datos():
     # Solicitar al usuario los estados y el alfabeto
-    estados = set(input("Ingrese los estados separados por comas: ").split(','))
+    estados = set(input("Ingrese los estados separados por comas: ").strip().split(','))
     alfabeto = set(input("Ingrese el alfabeto separado por comas: ").split(','))
 
     # Solicitar al usuario las transiciones
@@ -35,14 +35,23 @@ if __name__ == '__main__':
         
     # Solicitar al usuario el estado inicial y los estados finales
     estado_inicial = input("Ingrese el estado inicial: ")
+    while(estado_inicial not in estados):
+        print("estado inicial no valido")
+        estado_inicial = input("Ingrese el estado inicial: ")
+        
     estados_finales = set(input("Ingrese los estados finales separados por comas: ").split(','))
 
     # Crear el AFD
-    AFD = AFD(estados, alfabeto, transiciones, estado_inicial, estados_finales)
-
+    mi_AFD = AFD(estados, alfabeto, transiciones, estado_inicial, estados_finales)
+    return mi_AFD
+    
+    
+if __name__ == '__main__':
+    #TKinter
+    mi_AFD = pedir_datos()
     # Probar algunas palabras
     while True:
         palabra = input("Ingrese una palabra para validar (o 'fin' para terminar): ")
         if palabra.lower() == 'fin':
             break
-        print("¿La palabra '{}' es aceptada? {}".format(palabra, AFD.validar_palabra(palabra)))
+        print("¿La palabra '{}' es aceptada? {}".format(palabra, mi_AFD.validar_palabra(palabra)))
