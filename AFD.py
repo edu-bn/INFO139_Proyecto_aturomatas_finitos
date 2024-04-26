@@ -23,10 +23,13 @@ alfabeto = set(input("Ingrese el alfabeto separado por comas: ").split(','))
 # Solicitar al usuario las transiciones
 transiciones = {}
 while True:
-    transicion = input("Ingrese una transición en el formato 'estado, símbolo, nuevo estado' (o 'fin' para terminar): ")
-    if transicion.lower() == 'fin':
+    lista = input("Ingrese una transición en el formato 'estado, símbolo, nuevo estado' (o 'fin' para terminar): ")
+    if lista.lower() == 'fin':
         break
-    estado, simbolo, nuevo_estado = map(str.strip, transicion.split(','))
+    lista = lista.strip().split(',')
+    estado = lista[0]
+    simbolo = lista[1]
+    nuevo_estado = lista[2]
     transiciones[(estado, simbolo)] = nuevo_estado
 
 # Solicitar al usuario el estado inicial y los estados finales
