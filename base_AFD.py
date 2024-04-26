@@ -19,7 +19,7 @@ class AFD:
 def pedir_datos():
     # Solicitar al usuario los estados y el alfabeto
     estados = set(input("Ingrese los estados separados por comas: ").strip().split(','))
-    alfabeto = set(input("Ingrese el alfabeto separado por comas: ").split(','))
+    alfabeto = set(input("Ingrese el alfabeto separado por comas: ").strip().split(','))
 
     # Solicitar al usuario las transiciones
     transiciones = {}
@@ -28,18 +28,29 @@ def pedir_datos():
         if lista.lower() == 'fin':
             break
         lista = lista.strip().split(',')
+        if len(lista) != 3:
+            print("Formato no válido")
+            continue
         estado = lista[0]
         simbolo = lista[1]
         nuevo_estado = lista[2]
-        transiciones[(estado, simbolo)] = nuevo_estado
-        
+        if simbolo not in alfabeto or estado not in estados or nuevo_estado not in estados:
+            print("Transición no válida")
+        elif (estado, simbolo) in transiciones:
+            print(f"Simbolo ya utilizado en el estado: {estado}")
+        else:
+            transiciones[(estado, simbolo)] = nuevo_estado
+
     # Solicitar al usuario el estado inicial y los estados finales
     estado_inicial = input("Ingrese el estado inicial: ")
     while(estado_inicial not in estados):
         print("estado inicial no valido")
         estado_inicial = input("Ingrese el estado inicial: ")
         
-    estados_finales = set(input("Ingrese los estados finales separados por comas: ").split(','))
+    estados_finales = set(input("Ingrese los estados finales separados por comas: ").strip().split(','))
+    while not estados_finales.issubset(estados):
+        print("estado final no valido")
+        estados_finales = set(input("Ingrese los estados finales separados por comas: ").strip().split(','))
 
     # Crear el AFD
     mi_AFD = AFD(estados, alfabeto, transiciones, estado_inicial, estados_finales)
@@ -49,7 +60,7 @@ def pedir_datos():
 if __name__ == '__main__':
     #TKinter
     mi_AFD = pedir_datos()
-    # Probar algunas palabras
+
     while True:
         palabra = input("Ingrese una palabra para validar (o 'fin' para terminar): ")
         if palabra.lower() == 'fin':
