@@ -19,8 +19,11 @@ class AFD:
 def pedir_datos():
     # Solicitar al usuario los estados y el alfabeto
     estados = set(input("Ingrese los estados separados por comas: ").strip().split(','))
+    while ( "" in estados):
+        estados = set(input("ERROR, no ingrese elementos vacios(',,' o terminado en coma): ").strip().split(','))
     alfabeto = set(input("Ingrese el alfabeto separado por comas: ").strip().split(','))
-
+    while ( "" in alfabeto):
+        estados = set(input("ERROR, no ingrese elementos vacios(',,' o terminado en coma): ").strip().split(','))
     # Solicitar al usuario las transiciones
     transiciones = {}
     while True:
