@@ -1,5 +1,5 @@
 import tkinter as tk
-from Clase_AFD import AFD
+from clase_AFD import AFD
 
 def crear_ventana(ventana):
     #ventana = tk.Toplevel(ventana)
