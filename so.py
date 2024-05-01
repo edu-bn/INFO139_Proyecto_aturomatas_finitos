@@ -1,12 +1,60 @@
 import tkinter as tk
-from clase_AFD import AFD
+from Clase_AFD import AFD
 
-def crear_ventana(ventana):
-    #ventana = tk.Toplevel(ventana)
-    LimpiarVentana(ventana)
+def ventana_estados(ventana):
+    """Crea y muestra la ventana para el ingreso de estado inicial y estados finales de un AFD.
+
+    Args:
+        ventana (tk.Tk): Ventana principal de la aplicación.
+    """
+    limpiar_ventana(ventana)
+    ventana.title("ingreso de estados")
+
+    tk.Label(ventana, text="Ingresar estado inicial:").pack()
+    entry_estado_inicial = tk.Entry(ventana)
+    entry_estado_inicial.pack()
+
+    tk.Label(ventana, text="Ingresar estados finales separados por comas:").pack()
+    entry_estados_finales = tk.Entry(ventana)
+    entry_estados_finales.pack()
+
+    def seguir():
+        global estado_inicial
+        global estados_finales
+        estado_inicial = entry_estado_inicial.get().strip()
+        estados_finales = set(entry_estados_finales.get().strip().split(','))
+
+        if estado_inicial == "":
+            error_label_estado.config(text="ERROR: el estado inicial no puede ser vacio")
+        elif "" in estados_finales:
+            error_label_estado.config(text="ERROR: el campo 'estados finales' no puede ser vacio")            
+        else:
+            estados.add(estado_inicial)
+            for f in estados_finales:
+                estados.add(f)
+            print("ventanaE E_inicial",estado_inicial)
+            print("ventanaE E_finales", estados_finales)
+            
+            ventana_transiciones(ventana)
+
+
+    tk.Button(ventana, text="Confirmar", command=seguir).pack()
+
+    #etiqueta para mostrar errores
+    error_label_estado = tk.Label(ventana, text="", fg="red")
+    error_label_estado.pack()
+
+
+
+def ventana_transiciones(ventana):
+    """Crea y muestra la ventana para el ingreso de transiciones de un AFD.
+
+    Args:
+        ventana (tk.Tk): Ventana principal de la aplicación.
+    """
+    limpiar_ventana(ventana)
     ventana.title("Ingreso de Transiciones")
     
-    # Etiqueta y campo de entrada para la transición
     tk.Label(ventana, text="Transición (estado, símbolo, nuevo estado):").pack()
     entry_transicion = tk.Entry(ventana)
     entry_transicion.pack()
@@ -17,145 +65,97 @@ def crear_ventana(ventana):
         if len(transicion) == 3:
             estado = transicion[0]
             simbolo = transicion[1]
-            print(estado)
-            print(simbolo)
             nuevo_estado = transicion[2]
-            if simbolo not in alfabeto or estado not in estados or nuevo_estado not in estados:
-                error_label_transiciones.config(text="ERROR: Transición no válida")
-            elif  (estado, simbolo) in transiciones:
+            if  (estado, simbolo) in transiciones:
                 error_label_transiciones.config(text=f"Simbolo ya utilizado en el estado: {estado}")
-
             else:
                 transiciones[(estado, simbolo)] = nuevo_estado
+                if(estado not in estados):
+                    estados.add(estado)
+                if(nuevo_estado not in estados):
+                    estados.add(estado)
+                
                 label_transiciones.config(text=label_transiciones.cget("text") + "\n" + ", ".join(transicion))
-                entry_transicion.delete(0, tk.END)     
-                print(transiciones)
-
+                entry_transicion.delete(0, tk.END)
+                error_label_transiciones.config(text="")
+                
         else:
             error_label_transiciones.config(text="ERROR: Formato incorrecto")
 
-    # Botón para agregar la transición
     tk.Button(ventana, text="Agregar Transición", command=agregar_transicion).pack()
-
-    # Etiqueta para mostrar transiciones ingresadas
+    
     label_transiciones = tk.Label(ventana, text="Transiciones:")
     label_transiciones.pack()
 
-    # Etiqueta para mostrar errores
+    #etiqueta para mostrar errores
     error_label_transiciones = tk.Label(ventana, text="", fg="red")
     error_label_transiciones.pack()
 
-    # Botones para continuar o agregar más transiciones
-    tk.Button(ventana, text="Continuar", command=lambda:continuar(ventana)).pack()
-    #FIN crear ventana
+    mi_AFD = AFD(estados,transiciones,estado_inicial,estados_finales)
     
-    
-def continuar(ventana):
-    LimpiarVentana(ventana)
+    tk.Button(ventana, text="Continuar", command=lambda: ventana_palabras(ventana, mi_AFD)).pack()
 
-    tk.Label(ventana, text="Ingresar estado inicial:").pack()
-    entry_estado_inicial = tk.Entry(ventana)
-    entry_estado_inicial.pack()
 
-    tk.Label(ventana, text="Ingresar estados finales separados por comas:").pack()
-    entry_estados_finales =  tk.Entry(ventana)
-    entry_estados_finales.pack()
-    
-    def seguir():
-        estado_inicial = entry_estado_inicial.get().strip()
-        estados_finales = set(entry_estados_finales.get().strip().split(','))
-        
-        
-        if (estado_inicial not in estados):
-            error_label_estado.config(text="ERROR: el estado inicial ingresado no pertenece a los estados")
-        elif (not estados_finales.issubset(estados)):
-            error_label_estado.config(text="ERROR: algun estado final no pertenece a los estados")
-        else:
-            mi_AFD = AFD(estados,alfabeto,transiciones,estado_inicial,estados_finales)
-            ventana_palabras(ventana,mi_AFD)
-            
-    tk.Button(ventana, text="confirmar", command=seguir).pack()    
-    # Etiqueta para mostrar errores
-    error_label_estado = tk.Label(ventana, text="", fg="red")
-    error_label_estado.pack()
+def ventana_palabras(ventana, mi_AFD: AFD):
+    """Crea y muestra la ventana para el ingreso de palabras a evaluar en un AFD.
 
-    
-def ventana_palabras(ventana,mi_AFD: AFD):
-    LimpiarVentana(ventana)
-    ventana.title("ingresar palabras")
-    tk.Label(ventana, text="ingresar una palabra:").pack()
+    Args:
+        ventana (tk.Tk): Ventana principal de la aplicación.
+        mi_AFD (AFD): Instancia del AFD sobre el cual se evaluarán las palabras.
+    """
+    print("estados:",estados)
+    print("estado_inicial:",estado_inicial)
+    print("estados finales:",estados_finales)
+    print("transiciones:",transiciones)
+    limpiar_ventana(ventana)
+    ventana.title("Ingresar Palabras")
 
+    tk.Label(ventana, text="Ingresar una palabra:").pack()
     entry_palabra = tk.Entry(ventana)
     entry_palabra.pack()
-    
+
     def confirmar_palabras():
         palabra = str(entry_palabra.get())
-        if(mi_AFD.validar_palabra(palabra)):
-            palabra_label.config(text="la palabra pertenece al AFD", fg='green')
+        if mi_AFD.validar_palabra(palabra):
+            palabra_label.config(text="La palabra pertenece al AFD", fg='green')
         else:
-            palabra_label.config(text="la palabra no pertenece al AFD")
+            palabra_label.config(text="La palabra no pertenece al AFD", fg='red')
+            
 
-
-    tk.Button(ventana, text="confirmar", command=confirmar_palabras).pack()    
+    tk.Button(ventana, text="Confirmar", command=confirmar_palabras).pack()
+    #etiqueta para mostrar errores
     palabra_label = tk.Label(ventana, text="", fg="red")
     palabra_label.pack()
     
+    #nuevo
+    # Botón para volver a la ventana de ingreso de transiciones
+    tk.Button(ventana, text="Volver a Ingresar AFD", command=lambda:( mi_AFD.reiniciar_afd(),ventana_estados(ventana))).pack()
 
 
+def limpiar_ventana(ventana):
+    """Elimina todos los widgets de la ventana.
 
-def confirmar_estados_alfabeto(ventana):
-    # Obtener valores de los campos de entrada
-    estados_str = entry_estados.get().strip()
-    alfabeto_str = entry_alfabeto.get().strip()
-
-    # Verificar que no haya elementos vacíos
-   
-    global estados, alfabeto
-    estados = set(estados_str.split(','))
-    alfabeto = set(alfabeto_str.split(','))
-
-    # Verificar que no haya elementos vacíos en los conjuntos
-    if "" not in estados and "" not in alfabeto:
-        crear_ventana(ventana)
-    else:
-        error_label.config(text="ERROR: No ingrese elementos vacíos (',,' o terminado en coma)")
-    
-
-def LimpiarVentana(ventana):
-    """Elimina todos los widgets de la ventana"""
+    Args:
+        ventana (tk.Tk): Ventana de la cual se eliminarán los widgets.
+    """
     for widget in ventana.winfo_children():
-       widget.destroy()
+        widget.destroy()
+
 
 
 # Crear ventana principal
-
 ventana = tk.Tk()
-ventana.title("Ingreso de Estados y Alfabetos")
-ventana.geometry("400x400")
-
-# Etiquetas y campos de entrada para estados y alfabeto
-tk.Label(ventana, text="Estados separados por comas:").pack()
-entry_estados = tk.Entry(ventana)
-entry_estados.pack()
-
-tk.Label(ventana, text="Alfabeto separado por comas:").pack()
-entry_alfabeto = tk.Entry(ventana)
-entry_alfabeto.pack()
-
-# Botón para confirmar y cerrar la ventana
-tk.Button(ventana, text="Confirmar", command=lambda:confirmar_estados_alfabeto(ventana)).pack()
-
-# Etiqueta para mostrar errores
-error_label = tk.Label(ventana, text="", fg="red")
-error_label.pack()
+ventana.title("Ingreso de Datos del AFD")
+ventana.geometry("854x480")
 
 # Conjuntos para almacenar estados, alfabeto y transiciones
 estados = set()
-alfabeto = set()
 transiciones = {}
 estados_finales = set()
-estado_inicial = str()
 
+
+# Llamar a la función para crear la ventana de transiciones
+ventana_estados(ventana)
 
 # Bucle principal de la ventana
 ventana.mainloop()
