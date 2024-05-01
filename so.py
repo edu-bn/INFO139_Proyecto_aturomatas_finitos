@@ -166,7 +166,6 @@ ventana = tk.Tk()
 ventana.title("Simulador AFD")
 ventana.geometry("854x480")
 
-ventana.configure(bg="lightblue")
 # Conjuntos para almacenar estados, alfabeto y transiciones
 estados = set()
 transiciones = {}
