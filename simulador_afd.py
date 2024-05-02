@@ -1,5 +1,5 @@
 import tkinter as tk
-from clase_afd import AFD
+from Clase_AFD import AFD
 
 def ventana_estados(ventana):
     """Crea y muestra la ventana para el ingreso de estado inicial y estados finales de un AFD.
@@ -17,7 +17,7 @@ def ventana_estados(ventana):
     entry_estados_finales = tk.Entry(ventana)
     entry_estados_finales.pack()
 
-    def seguir():
+    def validar_estados():
         global estado_inicial
         global estados_finales
         estado_inicial = entry_estado_inicial.get().strip()
@@ -37,9 +37,8 @@ def ventana_estados(ventana):
             ventana_transiciones(ventana)
 
 
-    tk.Button(ventana, text="Confirmar", command=seguir).pack()
+    tk.Button(ventana, text="Confirmar", command=validar_estados).pack()
 
-    #etiqueta para mostrar errores
     error_label_estado = tk.Label(ventana, text="", fg="red")
     error_label_estado.pack()
 
@@ -67,8 +66,10 @@ def ventana_transiciones(ventana):
             estado = transicion[0].strip()
             simbolo = transicion[1].strip()
             nuevo_estado = transicion[2].strip()
-            if estado == "" or simbolo == "" or nuevo_estado == "":
+            if estado == "" or nuevo_estado == "":
                 error_label_transiciones.config(text=f"ERROR: no se acepta estado ni alfabeto vacio")
+            elif( len(simbolo) != 1):
+                error_label_transiciones.config(text=f"ERROR: el simbolo tiene que tener un carácter")
             elif  (estado, simbolo) in transiciones:
                 error_label_transiciones.config(text=f"Simbolo ya utilizado en el estado: {estado}")
             else:
@@ -97,7 +98,6 @@ def ventana_transiciones(ventana):
     label_transiciones = tk.Label(ventana, text="Transiciones:")
     label_transiciones.pack()
 
-    #etiqueta para mostrar errores
     error_label_transiciones = tk.Label(ventana, text="", fg="red")
     error_label_transiciones.pack()
 
@@ -120,7 +120,7 @@ def ventana_palabras(ventana, mi_AFD: AFD):
     entry_palabra = tk.Entry(ventana)
     entry_palabra.pack()
 
-    def confirmar_palabras():
+    def validar_palabras():
         palabra = str(entry_palabra.get())
         if mi_AFD.validar_palabra(palabra):
             palabra_label.config(text="La palabra pertenece al AFD", fg='green')
@@ -139,14 +139,12 @@ def ventana_palabras(ventana, mi_AFD: AFD):
     for (estado, simbolo), nuevo_estado in transiciones.items():
         tk.Label(ventana, text=f"{estado}, {simbolo} -> {nuevo_estado}").pack()
 
-    tk.Button(ventana, text="Confirmar", command=confirmar_palabras).pack()
-    #etiqueta para mostrar errores
+    tk.Button(ventana, text="Confirmar", command=validar_palabras).pack()
+
+
     palabra_label = tk.Label(ventana, text="", fg="red")
     palabra_label.pack()
      
-    
-    #nuevo
-    # Botón para volver a la ventana de ingreso de transiciones
     tk.Button(ventana, text="Volver a Ingresar AFD", command=lambda:( mi_AFD.reiniciar_afd(),ventana_estados(ventana))).pack()
 
 
@@ -161,18 +159,15 @@ def limpiar_ventana(ventana):
 
 
 
-# Crear ventana principal
 ventana = tk.Tk()
 ventana.title("Simulador AFD")
 ventana.geometry("854x480")
 
-# Conjuntos para almacenar estados, alfabeto y transiciones
+
 estados = set()
 transiciones = {}
 estados_finales = set()
 
-# Llamar a la función para crear la ventana de transiciones
 ventana_estados(ventana)
 
-# Bucle principal de la ventana
 ventana.mainloop()
