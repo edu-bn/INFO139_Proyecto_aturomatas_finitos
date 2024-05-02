@@ -1,5 +1,5 @@
 import tkinter as tk
-from Clase_AFD import AFD
+from clase_afd import AFD
 
 def ventana_estados(ventana):
     """Crea y muestra la ventana para el ingreso de estado inicial y estados finales de un AFD.
